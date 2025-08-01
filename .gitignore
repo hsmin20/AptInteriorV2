@@ -1,0 +1,4 @@
+node_modules/
+dist/*
+!dist/*.html
+.vscode/launch.json

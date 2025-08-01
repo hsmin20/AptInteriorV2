@@ -1,0 +1,33 @@
+// Init npm (installs webpack and everything) 
+npm init
+
+// Install Three
+npm install three --save-dev
+
+// Install TypeScript global (?)
+npm install --location=global typescript
+
+// Install Three Type 
+npm install @types/three --save-dev
+
+// Install WebPack Dev-server
+npm install webpack webpack-cli webpack-dev-server webpack-merge ts-loader --save-dev
+
+// Install TypeScript locally (?)
+npm install typescript --save-dev
+
+// Install Cannon-es (Physics Engine)
+npm install cannon-es --save-dev
+
+// Install cannon-es-debugger (For Debugging)
+npm install cannon-es-debugger
+
+// install bvh-cgs
+npm install three-bvh-csg --save-dev
+
+------------------------------------------------------------------------------------------------------------------
+// When developing... (starts server at 8080 port)
+npm run dev
+
+// For Production Deployment
+npm run build
