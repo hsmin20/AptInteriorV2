@@ -127,7 +127,7 @@ export class RoomInterior {
 		bedHead.parent = group;
 
         //  add 4 legs
-        const radius = 0.01;
+        const radius = 0.02;
         const leg_length = 0.2;
 
         const offset_x = width / 2.0 - radius;
