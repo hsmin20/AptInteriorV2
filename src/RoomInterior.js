@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 
 import { AddGroupCommand } from './commands/AddGroupCommand.js';
-import { AddObjectCommand } from './commands/AddObjectCommand.js';
 import { RemoveObjectCommand } from './commands/RemoveObjectCommand.js';
 import { SetMaterialMapCommand } from './commands/SetMaterialMapCommand.js';
 
@@ -272,7 +271,7 @@ export class RoomInterior {
 
             document.body.removeChild(dialog)
             
-            this.modWall_Internal(editor, walltype, whichside);
+            this.addWall_Internal(editor, walltype, whichside);
         });
 
         wallTypeDialog.showModal();

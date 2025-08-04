@@ -74,7 +74,7 @@ export class Viewport {
         this.transformControls.setMode('translate');
         
 
-        this.transformControls.addEventListener( 'objectChange', function () {
+        this.transformControls.addEventListener( 'change', function () {
             viewportScope.onObjectChanged( viewportScope.transformControls.object );
         } );
 
