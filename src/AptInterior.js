@@ -10,7 +10,7 @@ document.body.appendChild(viewport.container.dom);
 
 editor.setViewport(viewport);
 
-// viewport.createRenderer();
+viewport.createRenderer();
 viewport.render();
 
 const sidebar = new Sidebar( editor, viewport );
