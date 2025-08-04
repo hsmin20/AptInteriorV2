@@ -69,7 +69,9 @@ export class Viewport {
         let objectPositionOnDown = null;
         let objectRotationOnDown = null;
 
-        this.transformControls = new TransformControls( this.camera );
+        this.createRenderer();
+
+        this.transformControls = new TransformControls( this.camera, this.renderer.domElement );
         this.transformControls.setSize(0.25);
         this.transformControls.setMode('translate');
         
@@ -109,7 +111,7 @@ export class Viewport {
             viewportScope.controls.enabled = true;
         } );
 
-        this.sceneHelpers.add( this.transformControls.getHelper() );
+        this.sceneHelpers.add( this.transformControls );
     }
 
     getMousePosition( dom, x, y ) {
@@ -142,7 +144,6 @@ export class Viewport {
 		this.renderer = new THREE.WebGLRenderer( { alpha: true, } );
 
         this.controls.connect( this.renderer.domElement );
-        this.transformControls.connect( this.renderer.domElement );
 
         this.renderer.setAnimationLoop(this.animate.bind(this));
 		this.renderer.setClearColor( 0x223344 );
