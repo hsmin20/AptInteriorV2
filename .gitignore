@@ -2,4 +2,5 @@ node_modules/
 dist/*
 !dist/*.html
 !dist/css
+!dist/textures
 .vscode/launch.json
