@@ -130,6 +130,27 @@ export class MenubarEdit {
         } );
         kitchenSubmenu.add( option );
 
+        option = new UIRow();
+        option.setClass( 'option' );
+        option.setTextContent( 'Add a DiningTable' );
+        option.onClick( function () {
+            if(editorscope.selected == null) {
+                alert('Select an item first');
+                return;
+            }
+          if(editorscope.selected.type != 'Group') {
+                alert('Select a Group');
+                return;
+            }
+
+            roomInterior.addDiningTable(editorscope);
+        } );
+        kitchenSubmenu.add( option );
+
+
+
+        //============================Horizontal
+
         options.add( new UIHorizontalRule() );
 
         // Remove
@@ -150,5 +171,9 @@ export class MenubarEdit {
             }
         } );
         options.add( option );
+      
     }
-}
+
+    }
+    
+
