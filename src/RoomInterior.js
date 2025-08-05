@@ -385,12 +385,12 @@ export class RoomInterior {
         editor.objectChanged(group);
     }
 
-    addDinningTable_Internal(editor, parent, name, width, height, depth, desktype, oldPos, oldRot) {
+    addDiningTable_Internal(editor, parent, name, width, height, depth, texturetype, oldPos, oldRot) {
         // Add a group first
         const group = new THREE.Group();
 		group.name = name;
         group.userData.isInterior = true;
-        group.userData.interiorType = 'DinningTable';
+        group.userData.interiorType = 'DiningTable';
 
         if(oldPos != null)
             group.position.copy(oldPos);
@@ -922,7 +922,89 @@ export class RoomInterior {
 
         deskTypeDialog.showModal();
     }
+    
+    addDiningTable(editor, modify=false) {
+        const _html = `
+            <dialog id="DiningTableTypeDialog">
+            <form>
+                <p>
+                <label>
+                    <h1>Add/Change a DiningTable</h1>
+                        <p>Name : <input type="text" id="tableName" name="tableName" value="Table_1"> </p>
 
-}
+                    <h2>Table Size (m)</h2>
+                    <p>
+                        <label for="tableWidth">Width: </label>
+                        <input type="number" id="tableWidth" name="tableWidth" min="0.1" step="0.1" value="1.6">
+                        
+                        <label for="tableDepth" style="margin-left: 10px;">Depth: </label>
+                        <input type="number" id="tableDepth" name="tableDepth" min="0.1" step="0.1" value="0.9">
+                        
+                        <label for="tableHeight" style="margin-left: 10px;">Height: </label>
+                        <input type="number" id="tableHeight" name="tableHeight" min="0.1" step="0.05" value="0.75">
+                    </p>
+                    <div class="clearfix"></div>
+                        <h2>Texture Type </h2>
+                        <p><input type="radio" id="wood" name="texturetype" value="wood" checked>wood
+                           <input type="radio" id="marbel" name="texturetype" value="marvel">marbel</p>
+                </label>
+                </p>
+                <div>
+                <p>
+                <button value="cancel" formmethod="dialog">Cancel</button>
+                <button id="confirmBtn" value="default">Apply</button>
+                </p>
+                </div>
+            </form>
+            `
+
+                const dom = new DOMParser().parseFromString(_html, 'text/html');
+                const dialog = dom.querySelector("dialog");
+                document.body.appendChild(dialog)
+
+                const bedTypeDialog = document.getElementById("diningtableTypeDialog");
+                const inputNameBox = document.getElementById("bedName");
+
+                const confirmBtn = bedTypeDialog.querySelector("#confirmBtn");
+
+                // "Cancel" button closes the dialog without submitting because of [formmethod="dialog"], triggering a close event.
+                bedTypeDialog.addEventListener("close", (e) => {
+                    document.body.removeChild(dialog)
+                });
+
+                // Prevent the "confirm" button from the default behavior of submitting the form, and close the dialog with the `close()` method, which triggers the "close" event.
+                confirmBtn.addEventListener("click", (event) => {
+                    event.preventDefault(); // We don't want to submit this fake form
+                    // bedTypeDialog.close(); // Have to send the select box value here.
+                    var parent = editor.selected;
+                    var oldPos = null;
+                    var oldRot = null;
+                    if(modify) {
+                        parent = editor.selected.parent;
+                        oldPos = editor.selected.position;
+                        oldRot = editor.selected.rotation;
+
+                        editor.execute( new RemoveObjectCommand( editor, editor.selected ) );
+                    }
+
+                    var name = inputNameBox.value;
+                    const width = parseFloat(tableWidth.value);
+                    const height = parseFloat(tableDepth.value);
+                    const depth = parseFloat(tableHeight.value);
+                    const texturetype = document.querySelector('input[name=texturetype]:checked').value;
+
+                    document.body.removeChild(dialog)
+                    
+                    this.addDiningTable_Internal(editor, parent, name, width, height, depth, texturetype, oldPos, oldRot)
+                });
+
+                bedTypeDialog.showModal();
+            }
+
+
+
+
+        }
+            
 
 export let roomInterior = new RoomInterior();
