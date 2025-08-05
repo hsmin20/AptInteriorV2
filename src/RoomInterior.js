@@ -432,6 +432,10 @@ export class RoomInterior {
         editor.objectChanged(group);
     }
 
+    addBookshelf_Internal(editor, parent, name, width, height, depth, noOfLayers, oldPos, oldRot) {
+        
+    }
+
     addWall_Internal(editor, walltype, whichside) {
         let object = editor.selected;
         let materials = object.material;
@@ -861,9 +865,8 @@ export class RoomInterior {
                            Height : <input type="text" id="height" name="height" value="0.8">
                            Depth : <input type="text" id="depth" name="depth" value="0.72"></p>
                         <div class="clearfix"></div>
-                        <h2>Desk Type </h2>
-                        <p><input type="radio" id="wood" name="desktype" value="wood" checked>Wood Top
-                           <input type="radio" id="glass" name="desktype" value="glass">Glass Top
+                        <h2>Number of Layers </h2>
+                        <p>Layers : <input type="text" id="layers" name="layers" value="4">
                         </p>
                 </label>
                 </p>
@@ -880,16 +883,17 @@ export class RoomInterior {
         const dialog = dom.querySelector("dialog");
         document.body.appendChild(dialog)
 
-        const deskTypeDialog = document.getElementById("deskTypeDialog");
-        const inputNameBox = document.getElementById("deskName");
+        const bookshelfTypeDialog = document.getElementById("bookshelfTypeDialog");
+        const inputNameBox = document.getElementById("bookshelfName");
         const widthBox = document.getElementById("width");
         const heightBox = document.getElementById("height");
         const depthBox = document.getElementById("depth");
+        const layersBox = document.getElementById("layers");
 
-        const confirmBtn = deskTypeDialog.querySelector("#confirmBtn");
+        const confirmBtn = bookshelfTypeDialog.querySelector("#confirmBtn");
 
         // "Cancel" button closes the dialog without submitting because of [formmethod="dialog"], triggering a close event.
-        deskTypeDialog.addEventListener("close", (e) => {
+        bookshelfTypeDialog.addEventListener("close", (e) => {
             document.body.removeChild(dialog)
         });
 
@@ -897,7 +901,7 @@ export class RoomInterior {
         confirmBtn.addEventListener("click", (event) => {
             event.preventDefault(); // We don't want to submit this fake form
             
-            // deskTypeDialog.close(); // Have to send the select box value here.
+            // bookshelfTypeDialog.close(); // Have to send the select box value here.
             var parent = editor.selected;
             var oldPos = null;
             var oldRot = null;
@@ -913,14 +917,14 @@ export class RoomInterior {
             const width = parseFloat(widthBox.value);
             const height = parseFloat(heightBox.value);
             const depth = parseFloat(depthBox.value);
-            const desktype = document.querySelector('input[name=desktype]:checked').value;
+            const noOfLayers = parseInt(layersBox.value);
 
             document.body.removeChild(dialog)
             
-            this.addDesk_Internal(editor, parent, name, width, height, depth, desktype, oldPos, oldRot);
+            this.addBookshelf_Internal(editor, parent, name, width, height, depth, noOfLayers, oldPos, oldRot);
         });
 
-        deskTypeDialog.showModal();
+        bookshelfTypeDialog.showModal();
     }
 
 }
