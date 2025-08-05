@@ -311,6 +311,7 @@ export class Editor {
     objectChanged( object ) {
         saveState();
         this.sidebar.refreshUI( object );
-        this.viewport.onObjectChanged( object );
+        // this.viewport.onObjectChanged( object );
+        this.viewport.onObjectSelected( object );
     }
 }

@@ -110,6 +110,12 @@ export class SidebarObject {
                 roomInterior.addWall(editor);
             } else if(name.includes('bed')) {
                 roomInterior.addBed(editor, true);
+            } else if(name.includes('refrigerator')) {
+                roomInterior.addRefrigerator(editor, true);
+            } else if(name.includes('desk')) {
+                roomInterior.addDesk(editor, true);
+            } else if(name.includes('bookshelf')) {
+                roomInterior.addBookshelf(editor, true);
             } else {
                 alert('No Modification applicable');
             }

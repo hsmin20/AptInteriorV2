@@ -91,6 +91,39 @@ export class MenubarEdit {
         } );
         roomSubmenu.add( option );
 
+        option = new UIRow();
+        option.setClass( 'option' );
+        option.setTextContent( 'Add a Desk' );
+        option.onClick( function () {
+            if(editorscope.selected == null) {
+                alert('Select an item first');
+                return;
+            }
+
+            if(editorscope.selected.type != 'Group') {
+                alert('Select a Group');
+                return;
+            }
+            roomInterior.addDesk(editorscope);
+        } );
+        roomSubmenu.add( option );
+
+        option = new UIRow();
+        option.setClass( 'option' );
+        option.setTextContent( 'Add a Bookshelf' );
+        option.onClick( function () {
+            if(editorscope.selected == null) {
+                alert('Select an item first');
+                return;
+            }
+
+            if(editorscope.selected.type != 'Group') {
+                alert('Select a Group');
+                return;
+            }
+            roomInterior.addBookshelf(editorscope);
+        } );
+        roomSubmenu.add( option );
 
         // Kitchen
         const kitchenSubmenuTitle = new UIRow().setTextContent( 'Kitchen' ).addClass( 'option' ).addClass( 'submenu-title' );
@@ -121,8 +154,8 @@ export class MenubarEdit {
                 alert('Select an item first');
                 return;
             }
-            if(!editorscope.selected.name.toLowerCase().includes('kitchen')) {
-                alert('Select a Kitchen first');
+             if(editorscope.selected.type != 'Group') {
+                alert('Select a Group');
                 return;
             }
 

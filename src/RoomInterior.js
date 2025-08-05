@@ -69,7 +69,7 @@ export class RoomInterior {
     }
 
     addBed_Internal(editor, parent, name, bedsize, bedtype, oldPos, oldRot) {
-         // Add a group first
+        // Add a group first
         const group = new THREE.Group();
 		group.name = name;
         group.userData.isInterior = true;
@@ -138,7 +138,7 @@ export class RoomInterior {
             leg.name = name + "_leg" + i;
             leg.position.x = (i % 2 == 0) ? offset_x : -offset_x;
             leg.position.y = -leg_length / 2.0;
-            leg.position.z = (i % 2 == 0) ? -offset_z : offset_z;
+            leg.position.z = (i < 3) ? -offset_z : offset_z;
 
             group.children.push( leg );
             leg.parent = group;
@@ -161,6 +161,39 @@ export class RoomInterior {
         group.position.y = leg_length;
 
         editor.objectChanged(group);
+    }
+
+    addWall_Internal(editor, walltype, whichside) {
+        let object = editor.selected;
+        let materials = object.material;
+
+        let index = 4;
+        if(whichside == 'outside') {
+            index = 5;
+        }
+
+        let newMaps = [];
+        for(let i=0; i<6; i++) {
+            if(i != index) {
+                newMaps.push(materials[i]['map'] );
+            } else {
+                const repeatX = materials[i]['map'].repeat.x;
+                const repeatY = materials[i]['map'].repeat.y;
+
+                const texture = textureHelper.get(walltype, repeatX, repeatY);
+                if ( texture !== null ) {
+                    texture.colorSpace = THREE.SRGBColorSpace;
+                    materials.needsUpdate = true;
+                }
+
+                materials[index].dispose();
+                newMaps.push(texture);
+            }
+        }
+
+        editor.execute( new SetMaterialMapCommand( editor, object, 'map', newMaps ) );
+        
+        editor.objectChanged( object );
     }
 
     addWall(editor) {
@@ -391,88 +424,6 @@ export class RoomInterior {
 
         bedTypeDialog.showModal();
     }
-
-
-    addDiningTable(editor, modify=false) {
-        const _html = `
-            <dialog id="DiningTableTypeDialog">
-            <form>
-                <p>
-                <label>
-                    <h1>Add/Change a Bed</h1>
-                        <p>Name : <input type="text" id="bedName" name="bedName" value="Table_1"> </p>
-
-                    <h2>Table Size (m)</h2>
-                    <p>
-                        <label for="tableWidth">Width: </label>
-                        <input type="number" id="tableWidth" name="tableWidth" min="0.1" step="0.1" value="1.6">
-                        
-                        <label for="tableDepth" style="margin-left: 10px;">Depth: </label>
-                        <input type="number" id="tableDepth" name="tableDepth" min="0.1" step="0.1" value="0.9">
-                        
-                        <label for="tableHeight" style="margin-left: 10px;">Height: </label>
-                        <input type="number" id="tableHeight" name="tableHeight" min="0.1" step="0.05" value="0.75">
-                    </p>
-                    <div class="clearfix"></div>
-                        <h2>Frame Type </h2>
-                        <p><input type="radio" id="wood" name="frametype" value="wood" checked>wood
-                           <input type="radio" id="marbel" name="frametype" value="marvel">marbel</p>
-                </label>
-                </p>
-                <div>
-                <p>
-                <button value="cancel" formmethod="dialog">Cancel</button>
-                <button id="confirmBtn" value="default">Apply</button>
-                </p>
-                </div>
-            </form>
-    `
-
-        const dom = new DOMParser().parseFromString(_html, 'text/html');
-        const dialog = dom.querySelector("dialog");
-        document.body.appendChild(dialog)
-
-        const bedTypeDialog = document.getElementById("diningtableTypeDialog");
-        const inputNameBox = document.getElementById("bedName");
-
-        const confirmBtn = bedTypeDialog.querySelector("#confirmBtn");
-
-        // "Cancel" button closes the dialog without submitting because of [formmethod="dialog"], triggering a close event.
-        bedTypeDialog.addEventListener("close", (e) => {
-            document.body.removeChild(dialog)
-        });
-
-        // Prevent the "confirm" button from the default behavior of submitting the form, and close the dialog with the `close()` method, which triggers the "close" event.
-        confirmBtn.addEventListener("click", (event) => {
-            event.preventDefault(); // We don't want to submit this fake form
-            
-            // bedTypeDialog.close(); // Have to send the select box value here.
-            var parent = editor.selected;
-            var oldPos = null;
-            var oldRot = null;
-            if(modify) {
-                parent = editor.selected.parent;
-                oldPos = editor.selected.position;
-                oldRot = editor.selected.rotation;
-
-                editor.execute( new RemoveObjectCommand( editor, editor.selected ) );
-            }
-
-            var name = inputNameBox.value;
-            const diningtablesize = document.querySelector('input[name=diningtablesize]:checked').value;
-            const frametype = document.querySelector('input[name=frametype]:checked').value;
-
-            document.body.removeChild(dialog)
-            
-            this.addDiningTable_Internal(editor, parent, name, diningtablesize, frametype, oldPos, oldRot);
-        });
-
-        bedTypeDialog.showModal();
-    }
-
-
-
-
 }
 
 export let roomInterior = new RoomInterior();
