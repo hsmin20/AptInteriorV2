@@ -432,6 +432,92 @@ export class RoomInterior {
         editor.objectChanged(group);
     }
 
+    addBookshelf_Internal(editor, parent, name, width, height, depth, noOfLayers, oldPos, oldRot) {
+        // Add a group first
+        const group = new THREE.Group();
+		group.name = name;
+        group.userData.isInterior = true;
+        group.userData.interiorType = 'Bookshelf';
+
+        if(oldPos != null)
+            group.position.copy(oldPos);
+        if(oldRot != null)
+            group.rotation.copy(oldRot);
+
+        editor.execute( new AddGroupCommand( editor, group, parent ) );
+
+        // Add Top & Bottom
+        const panelDepth = 0.01;
+        let panelTexture = textureHelper.get('Wood', 4, 6);
+
+        const topPanel = new THREE.Mesh( new THREE.BoxGeometry(width, panelDepth, depth), new THREE.MeshStandardMaterial( { map: panelTexture} ) );
+        topPanel.name = name + "_TopPanel";
+        topPanel.position.x = 0.0;
+        topPanel.position.y = height - (panelDepth / 2.0);
+        topPanel.position.z = 0.0;
+
+        group.children.push( topPanel );
+		topPanel.parent = group;
+
+        const bottomPanel = new THREE.Mesh( new THREE.BoxGeometry(width, panelDepth, depth), new THREE.MeshStandardMaterial( { map: panelTexture} ) );
+        bottomPanel.name = name + "_BottomPanel";
+        bottomPanel.position.x = 0.0;
+        bottomPanel.position.y = panelDepth / 2.0;
+        bottomPanel.position.z = 0.0;
+
+        group.children.push( bottomPanel );
+		bottomPanel.parent = group;
+
+        // Add Left & Right
+        const leftPanel = new THREE.Mesh( new THREE.BoxGeometry(panelDepth, height, depth), new THREE.MeshStandardMaterial( { map: panelTexture} ) );
+        leftPanel.name = name + "_LeftPanel";
+        leftPanel.position.x = -(width - panelDepth) / 2.0;
+        leftPanel.position.y = height / 2.0;
+        leftPanel.position.z = 0.0;
+
+        group.children.push( leftPanel );
+		leftPanel.parent = group;
+
+        const rightPanel = new THREE.Mesh( new THREE.BoxGeometry(panelDepth, height, depth), new THREE.MeshStandardMaterial( { map: panelTexture} ) );
+        rightPanel.name = name + "_RightPanel";
+        rightPanel.position.x = (width - panelDepth) / 2.0;
+        rightPanel.position.y = height / 2.0;
+        rightPanel.position.z = 0.0;
+
+        group.children.push( rightPanel );
+		rightPanel.parent = group;
+
+        // Add Back
+        const backPanel = new THREE.Mesh( new THREE.BoxGeometry(width, height, panelDepth), new THREE.MeshStandardMaterial( { map: panelTexture} ) );
+        backPanel.name = name + "_BackPanel";
+        backPanel.position.x = 0.0;
+        backPanel.position.y = height / 2.0;
+        backPanel.position.z = -(depth - panelDepth) / 2.0;
+
+        group.children.push( backPanel );
+		backPanel.parent = group;
+
+        // Add Layers
+        const layer_width = width - (panelDepth  * 2);
+        const height_inside = height - (panelDepth * 2);
+        const one_layer_height = height_inside / noOfLayers;
+        let cur_height = one_layer_height;
+        for(let i=1; i<=noOfLayers; i++) {
+            const layer = new THREE.Mesh( new THREE.BoxGeometry(layer_width, panelDepth, depth), new THREE.MeshStandardMaterial( { map: panelTexture} ));
+            layer.name = name + "_layer" + i;
+            layer.position.x = 0.0;
+            layer.position.y = cur_height;
+            layer.position.z = 0.0;
+
+            group.children.push( layer );
+            layer.parent = group;
+
+            cur_height += one_layer_height;
+        }
+
+        editor.objectChanged(group);
+    }
+
     addWall_Internal(editor, walltype, whichside) {
         let object = editor.selected;
         let materials = object.material;
@@ -853,17 +939,16 @@ export class RoomInterior {
             <form>
                 <p>
                 <label>
-                    <h1>Add/Change a Desk</h1>
+                    <h1>Add/Change a Bookshelf</h1>
                         <p>Name : <input type="text" id="bookshelfName" name="bookshelfName" value="Bookshelf_1"> </p>
 
                         <h2>Desk size </h2>
-                        <p>Width : <input type="text" id="width" name="width" value="1.4">
-                           Height : <input type="text" id="height" name="height" value="0.8">
-                           Depth : <input type="text" id="depth" name="depth" value="0.72"></p>
+                        <p>Width : <input type="text" id="width" name="width" value="0.57">
+                           Height : <input type="text" id="height" name="height" value="1.5">
+                           Depth : <input type="text" id="depth" name="depth" value="0.3"></p>
                         <div class="clearfix"></div>
-                        <h2>Desk Type </h2>
-                        <p><input type="radio" id="wood" name="desktype" value="wood" checked>Wood Top
-                           <input type="radio" id="glass" name="desktype" value="glass">Glass Top
+                        <h2>No of Layers</h2>
+                        <p>Name : <input type="text" id="layers" name="layers" value="4">
                         </p>
                 </label>
                 </p>
@@ -880,16 +965,17 @@ export class RoomInterior {
         const dialog = dom.querySelector("dialog");
         document.body.appendChild(dialog)
 
-        const deskTypeDialog = document.getElementById("deskTypeDialog");
-        const inputNameBox = document.getElementById("deskName");
+        const bookshelfTypeDialog = document.getElementById("bookshelfTypeDialog");
+        const inputNameBox = document.getElementById("bookshelfName");
         const widthBox = document.getElementById("width");
         const heightBox = document.getElementById("height");
         const depthBox = document.getElementById("depth");
+        const layersBox = document.getElementById("layers");
 
-        const confirmBtn = deskTypeDialog.querySelector("#confirmBtn");
+        const confirmBtn = bookshelfTypeDialog.querySelector("#confirmBtn");
 
         // "Cancel" button closes the dialog without submitting because of [formmethod="dialog"], triggering a close event.
-        deskTypeDialog.addEventListener("close", (e) => {
+        bookshelfTypeDialog.addEventListener("close", (e) => {
             document.body.removeChild(dialog)
         });
 
@@ -897,7 +983,7 @@ export class RoomInterior {
         confirmBtn.addEventListener("click", (event) => {
             event.preventDefault(); // We don't want to submit this fake form
             
-            // deskTypeDialog.close(); // Have to send the select box value here.
+            // bookshelfTypeDialog.close(); // Have to send the select box value here.
             var parent = editor.selected;
             var oldPos = null;
             var oldRot = null;
@@ -913,14 +999,14 @@ export class RoomInterior {
             const width = parseFloat(widthBox.value);
             const height = parseFloat(heightBox.value);
             const depth = parseFloat(depthBox.value);
-            const desktype = document.querySelector('input[name=desktype]:checked').value;
+            const noOfLayers = parseInt(layersBox.value);
 
             document.body.removeChild(dialog)
             
-            this.addDesk_Internal(editor, parent, name, width, height, depth, desktype, oldPos, oldRot);
+            this.addBookshelf_Internal(editor, parent, name, width, height, depth, noOfLayers, oldPos, oldRot);
         });
 
-        deskTypeDialog.showModal();
+        bookshelfTypeDialog.showModal();
     }
 
 }
