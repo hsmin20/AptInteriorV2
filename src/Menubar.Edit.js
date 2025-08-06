@@ -125,6 +125,23 @@ export class MenubarEdit {
         } );
         roomSubmenu.add( option );
 
+        option = new UIRow();
+        option.setClass( 'option' );
+        option.setTextContent( 'Add a Wardrobe' );
+        option.onClick( function () {
+            if(editorscope.selected == null) {
+                alert('Select an item first');
+                return;
+            }
+
+            if(editorscope.selected.type != 'Group') {
+                alert('Select a Group');
+                return;
+            }
+            roomInterior.addWardrobe(editorscope);
+        } );
+        roomSubmenu.add( option );
+
         // Kitchen
         const kitchenSubmenuTitle = new UIRow().setTextContent( 'Kitchen' ).addClass( 'option' ).addClass( 'submenu-title' );
         kitchenSubmenuTitle.onMouseOver( function () {

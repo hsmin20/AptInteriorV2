@@ -116,6 +116,8 @@ export class SidebarObject {
                 roomInterior.addDesk(editor, true);
             } else if(name.includes('bookshelf')) {
                 roomInterior.addBookshelf(editor, true);
+            } else if(name.includes('diningtable')) {
+                roomInterior.addDiningTable(editor, true);
             } else {
                 alert('No Modification applicable');
             }

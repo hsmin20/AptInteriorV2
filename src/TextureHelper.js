@@ -18,7 +18,8 @@ class TextureHelper {
             ['DrawerDoorLeft', './textures/drawerDoorL.jpg'], ['DrawerDoorRight', './textures/drawerDoorR.jpg'], ['GasRange', './textures/gasRange.jpg'],
             ['Light1', './textures/light1.jpg'], ['Light2', './textures/light2.jpg'], ['Light3', './textures/light3.jpg'], ['BlackMetal', './textures/blackmetal.jpg'],
             ['TV', './textures/tv.jpg'], ['FridgeInside', './textures/fridgeInternal.jpg'], ['FridgeDoorL', './textures/fridgeDoorL.jpg'],
-            ['FridgeDoorR', './textures/fridgeDoorR.jpg'], ['Shiny', './textures/shiny.jpg'], ['Glass', './textures/glass.jpg']
+            ['FridgeDoorR', './textures/fridgeDoorR.jpg'], ['Shiny', './textures/shiny.jpg'], ['Glass', './textures/glass.jpg'], ['WhiteWood', './textures/whitewood.jpg'],
+            ['DrawerDoorFront', './textures/drawerFront.jpg']
         ]);
 	}
 
