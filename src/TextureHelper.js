@@ -19,7 +19,9 @@ class TextureHelper {
             ['Light1', './textures/light1.jpg'], ['Light2', './textures/light2.jpg'], ['Light3', './textures/light3.jpg'], ['BlackMetal', './textures/blackmetal.jpg'],
             ['TV', './textures/tv.jpg'], ['FridgeInside', './textures/fridgeInternal.jpg'], ['FridgeDoorL', './textures/fridgeDoorL.jpg'],
             ['FridgeDoorR', './textures/fridgeDoorR.jpg'], ['Shiny', './textures/shiny.jpg'], ['Glass', './textures/glass.jpg'], ['WhiteWood', './textures/whitewood.jpg'],
-            ['DrawerDoorFront', './textures/drawerFront.jpg']
+            ['WhitePlastic', './textures/whitePlastic.jpg'], ['DrawerDoorFront', './textures/drawerFront.jpg'], ['DrumMachineFront', './textures/drummachine_front.jpg'],
+            ['WashingMachineBack', './textures/drummachine_back.jpg'], ['WashingMachineLeft', './textures/drummachine_left.jpg'], ['WashingMachineRight', './textures/drummachine_right.jpg'],
+            ['TopLoading', './textures/topLoading.jpg'], ['Leather', './textures/leather.jpg'], ['Wool', './textures/wool.jpg']
         ]);
 	}
 
@@ -28,7 +30,7 @@ class TextureHelper {
     }
 	
 	get(name, repeatX, repeatY) {
-        const textureName = name + "_" + repeatX + "_" + repeatY;
+        let textureName = name + "_" + repeatX + "_" + repeatY;
         if(this.mapTexture.has(textureName))
             return this.mapTexture.get(textureName);
 
@@ -45,7 +47,6 @@ class TextureHelper {
         texture.wrapS = THREE.RepeatWrapping;
         texture.wrapT = THREE.RepeatWrapping;
         texture.repeat.set(repeatX, repeatY);
-
         this.mapTexture.set(textureName, texture);
 
         return texture;

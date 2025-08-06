@@ -182,7 +182,7 @@ export class MenubarEdit {
 
         option = new UIRow();
         option.setClass( 'option' );
-        option.setTextContent( 'Add a DiningTable' );
+        option.setTextContent( 'Add a Dining Table' );
         option.onClick( function () {
             if(editorscope.selected == null) {
                 alert('Select an item first');
@@ -194,6 +194,23 @@ export class MenubarEdit {
             }
 
             roomInterior.addDiningTable(editorscope);
+        } );
+        kitchenSubmenu.add( option );
+
+        option = new UIRow();
+        option.setClass( 'option' );
+        option.setTextContent( 'Add a Washing Machine' );
+        option.onClick( function () {
+            if(editorscope.selected == null) {
+                alert('Select an item first');
+                return;
+            }
+          if(editorscope.selected.type != 'Group') {
+                alert('Select a Group');
+                return;
+            }
+
+            roomInterior.addWashingMachine(editorscope);
         } );
         kitchenSubmenu.add( option );
 
