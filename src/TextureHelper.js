@@ -21,7 +21,7 @@ class TextureHelper {
             ['FridgeDoorR', './textures/fridgeDoorR.jpg'], ['Shiny', './textures/shiny.jpg'], ['Glass', './textures/glass.jpg'], ['WhiteWood', './textures/whitewood.jpg'],
             ['WhitePlastic', './textures/whitePlastic.jpg'], ['DrawerDoorFront', './textures/drawerFront.jpg'], ['DrumMachineFront', './textures/drummachine_front.jpg'],
             ['WashingMachineBack', './textures/drummachine_back.jpg'], ['WashingMachineLeft', './textures/drummachine_left.jpg'], ['WashingMachineRight', './textures/drummachine_right.jpg'],
-            ['TopLoading', './textures/topLoading.jpg'], ['Leather', './textures/leather.jpg'], ['Wool', './textures/wool.jpg']
+            ['TopLoading', './textures/topLoading.jpg'], ['Leather', './textures/leather.jpg'], ['Fabric', './textures/wool.jpg']
         ]);
 	}
 

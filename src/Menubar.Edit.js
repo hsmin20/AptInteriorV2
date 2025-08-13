@@ -59,23 +59,6 @@ export class MenubarEdit {
 
         option = new UIRow();
         option.setClass( 'option' );
-        option.setTextContent( 'Add a Sofa' );
-        option.onClick( function () {
-            if(editorscope.selected == null) {
-                alert('Select an item first');
-                return;
-            }
-
-            if(editorscope.selected.type != 'Group') {
-                alert('Select a Group');
-                return;
-            }
-            roomInterior.addSofa(editorscope);
-        } );
-        roomSubmenu.add( option );
-
-        option = new UIRow();
-        option.setClass( 'option' );
         option.setTextContent( 'Add a Bed' );
         option.onClick( function () {
             if(editorscope.selected == null) {
@@ -142,6 +125,92 @@ export class MenubarEdit {
         } );
         roomSubmenu.add( option );
 
+        // LivingRoom
+        const livingroomSubmenuTitle = new UIRow().setTextContent( 'Living Room' ).addClass( 'option' ).addClass( 'submenu-title' );
+        livingroomSubmenuTitle.onMouseOver( function () {
+            const { top, right } = livingroomSubmenuTitle.dom.getBoundingClientRect();
+            const { paddingTop } = getComputedStyle( this.dom );
+            livingroomSubmenu.setLeft( right + 'px' );
+            livingroomSubmenu.setTop( top - parseFloat( paddingTop ) + 'px' );
+            livingroomSubmenu.setStyle( 'max-height', [ `calc( 100vh - ${top}px )` ] );
+            livingroomSubmenu.setDisplay( 'block' );
+        } );
+        livingroomSubmenuTitle.onMouseOut( function () {
+            livingroomSubmenu.setDisplay( 'none' );
+        } );
+        options.add( livingroomSubmenuTitle );
+
+        const livingroomSubmenu = new UIPanel().setPosition( 'fixed' ).addClass( 'options' ).setDisplay( 'none' );
+        livingroomSubmenuTitle.add( livingroomSubmenu );
+
+        option = new UIRow();
+        option.setClass( 'option' );
+        option.setTextContent( 'Add a Sofa' );
+        option.onClick( function () {
+            if(editorscope.selected == null) {
+                alert('Select an item first');
+                return;
+            }
+
+            if(editorscope.selected.type != 'Group') {
+                alert('Select a Group');
+                return;
+            }
+            roomInterior.addSofa(editorscope);
+        } );
+        livingroomSubmenu.add( option );
+
+        option = new UIRow();
+        option.setClass( 'option' );
+        option.setTextContent( 'Add a Coffee Table' );
+        option.onClick( function () {
+            if(editorscope.selected == null) {
+                alert('Select an item first');
+                return;
+            }
+
+            if(editorscope.selected.type != 'Group') {
+                alert('Select a Group');
+                return;
+            }
+            roomInterior.addCoffeeTable(editorscope);
+        } );
+        livingroomSubmenu.add( option );
+
+        option = new UIRow();
+        option.setClass( 'option' );
+        option.setTextContent( 'Add a TV' );
+        option.onClick( function () {
+            if(editorscope.selected == null) {
+                alert('Select an item first');
+                return;
+            }
+
+            if(editorscope.selected.type != 'Group') {
+                alert('Select a Group');
+                return;
+            }
+            roomInterior.addTV(editorscope);
+        } );
+        livingroomSubmenu.add( option );
+
+        option = new UIRow();
+        option.setClass( 'option' );
+        option.setTextContent( 'Add a TV table' );
+        option.onClick( function () {
+            if(editorscope.selected == null) {
+                alert('Select an item first');
+                return;
+            }
+
+            if(editorscope.selected.type != 'Group') {
+                alert('Select a Group');
+                return;
+            }
+            roomInterior.addTVTable(editorscope);
+        } );
+        livingroomSubmenu.add( option );
+
         // Kitchen
         const kitchenSubmenuTitle = new UIRow().setTextContent( 'Kitchen' ).addClass( 'option' ).addClass( 'submenu-title' );
         kitchenSubmenuTitle.onMouseOver( function () {
@@ -154,9 +223,7 @@ export class MenubarEdit {
 
         } );
         kitchenSubmenuTitle.onMouseOut( function () {
-
             kitchenSubmenu.setDisplay( 'none' );
-
         } );
         options.add( kitchenSubmenuTitle );
 

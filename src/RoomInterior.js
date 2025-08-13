@@ -84,9 +84,9 @@ export class RoomInterior {
 
         const frameTexture = textureHelper.get('Wood', 4, 4);
         // Add a bottom
-        const frameheight = 0.28;
+        const frameheight = 0.08;
         const sofaFrame = new THREE.Mesh( new THREE.BoxGeometry(width, frameheight, depth),
-            new THREE.MeshStandardMaterial( { map: frameTexture} ) );
+                                          new THREE.MeshStandardMaterial( { map: frameTexture} ) );
         sofaFrame.name = name + "_Frame";
         sofaFrame.position.x = 0.0;
         sofaFrame.position.y = frameheight / 2.0;
@@ -95,10 +95,75 @@ export class RoomInterior {
         group.children.push( sofaFrame );
 		sofaFrame.parent = group;
 
+        const cushionTexture = textureHelper.get(sofatype, 2, 2);
+        // Add cushion & back panel
+        const offset = 0.001;
+        const noOfCushion = width > 2.3 ? 3 : 2;
+        let cushion_width = width / noOfCushion;
+        const cushion_height = 0.15;
+        const backDepth = 0.1;
+        let start_x = noOfCushion == 2 ? -0.5 * cushion_width : -1 * cushion_width;
+        for(let i=1; i<=noOfCushion; i++) {
+            const cushion = new THREE.Mesh( new THREE.BoxGeometry(cushion_width-offset, cushion_height, depth),
+                                            new THREE.MeshStandardMaterial( { map: cushionTexture} ));
+            cushion.name = name + "_cushion" + i;
+            cushion.position.x = start_x;
+            cushion.position.y = frameheight + cushion_height / 2.0;
+            cushion.position.z = 0.0;
+
+            group.children.push( cushion );
+            cushion.parent = group;
+
+            const backFrame = new THREE.Mesh( new THREE.BoxGeometry(cushion_width-offset, height, backDepth),
+                                            new THREE.MeshStandardMaterial( { map: cushionTexture} ) );
+            backFrame.name = name + "_BackFrame" + i;
+            backFrame.position.x = start_x;
+            backFrame.position.y = frameheight + cushion_height / 2.0 + height / 2.0;
+            backFrame.position.z = -depth / 2.0;
+            backFrame.rotation.x = -Math.PI / 8.0
+
+            group.children.push( backFrame );
+            backFrame.parent = group;
+
+            start_x += cushion_width;
+        }
+
         // Add arm-rest
+        const radius = 0.14;
+        for(let i=1; i<=2; i++) {
+            const armrest = new THREE.Mesh( new THREE.CylinderGeometry(radius, radius, depth), 
+                                            new THREE.MeshStandardMaterial( { map: cushionTexture} ));
+            armrest.name = name + "_armrest" + i;
+            armrest.position.x = (i % 2 == 0) ? -width / 2.0 : width / 2.0;
+            armrest.position.y = frameheight + radius;
+            armrest.position.z = 0.0;
+            armrest.rotation.x = Math.PI / 2.0;
+
+            group.children.push( armrest );
+            armrest.parent = group;
+        }
+
+        // Add 4 legs
+        const leg_width = 0.05;
+        const leg_height = 0.1;
+        const offset_x = width / 2.0 - (leg_width / 2.0);
+        const offset_z = depth / 2.0 - (leg_width / 2.0);
+
+        const legTexture = textureHelper.get('Wood', 1, 4);
+        for(let i=1; i<=4; i++) {
+            const leg = new THREE.Mesh( new THREE.BoxGeometry(leg_width, leg_height, leg_width), 
+                                        new THREE.MeshStandardMaterial( { map: legTexture} ));
+            leg.name = name + "_leg" + i;
+            leg.position.x = (i % 2 == 0) ? offset_x : -offset_x;
+            leg.position.y = -leg_height / 2.0;
+            leg.position.z = (i < 3) ? -offset_z : offset_z;
+
+            group.children.push( leg );
+            leg.parent = group;
+        }
 
 
-
+        group.position.y = leg_height;
 
         editor.objectChanged(group);
 
@@ -554,6 +619,59 @@ export class RoomInterior {
         editor.objectChanged(group);
     }
 
+    addCoffeeTable_Internal(editor, parent, name, width, height, depth, coffeeTabletype, oldPos, oldRot) {
+        // Add a group first
+        const group = new THREE.Group();
+		group.name = name;
+        group.userData.isInterior = true;
+        group.userData.interiorType = 'CoffeeTable';
+
+        if(oldPos != null)
+            group.position.copy(oldPos);
+        if(oldRot != null)
+            group.rotation.copy(oldRot);
+
+        editor.execute( new AddGroupCommand( editor, group, parent ) );
+
+        // Add a Panel
+        const panelHeight = 0.05;
+        let panelTexture = textureHelper.get(coffeeTabletype, 1, 1);
+
+        const material = new THREE.MeshStandardMaterial( { map: panelTexture} );
+        if(coffeeTabletype == 'Glass') {
+            material.transparent = true;
+            material.opacity = 0.6;
+        }
+
+        const tablePanel = new THREE.Mesh( new THREE.BoxGeometry(width, panelHeight, depth), material );
+        tablePanel.name = name + "_Panel";
+        tablePanel.position.x = 0.0;
+        tablePanel.position.y = height + (panelHeight / 2.0);
+        tablePanel.position.z = 0.0;
+
+        group.children.push( tablePanel );
+		tablePanel.parent = group;
+
+        // Add 4 legs
+        const leg_width = 0.03;
+        const offset_x = width / 2.0 - (leg_width / 2.0) - 0.01;
+        const offset_z = depth / 2.0 - (leg_width / 2.0) - 0.01;
+
+        const legTexture = textureHelper.get('Wood', 1, 4);
+        for(let i=1; i<=4; i++) {
+            const leg = new THREE.Mesh( new THREE.BoxGeometry(leg_width, height, leg_width), new THREE.MeshStandardMaterial( { map: legTexture} ));
+            leg.name = name + "_leg" + i;
+            leg.position.x = (i % 2 == 0) ? offset_x : -offset_x;
+            leg.position.y = height / 2.0;
+            leg.position.z = (i < 3) ? -offset_z : offset_z;
+
+            group.children.push( leg );
+            leg.parent = group;
+        }
+
+        editor.objectChanged(group);
+    }
+
     addWardrobe_Internal(editor, parent, name, width, height, depth, wardrobetype, noOfDrawers, oldPos, oldRot) {
         // Add a group first
         const group = new THREE.Group();
@@ -793,6 +911,124 @@ export class RoomInterior {
         editor.objectChanged( group );
     }
 
+    addTVTable_Internal(editor, parent, name, width, height, depth, tvTabletype, noOfLayers, door, oldPos, oldRot) {
+        // Add a group first
+        const group = new THREE.Group();
+		group.name = name;
+        group.userData.isInterior = true;
+        group.userData.interiorType = 'TV';
+
+        if(oldPos != null)
+            group.position.copy(oldPos);
+        if(oldRot != null)
+            group.rotation.copy(oldRot);
+
+        editor.execute( new AddGroupCommand( editor, group, parent ) );
+
+        // Add Top & Bottom
+        const panelDepth = 0.02;
+        let panelTexture = textureHelper.get('Wood', 4, 6);
+
+        const topPanel = new THREE.Mesh( new THREE.BoxGeometry(width, panelDepth, depth), new THREE.MeshStandardMaterial( { map: panelTexture} ) );
+        topPanel.name = name + "_TopPanel";
+        topPanel.position.x = 0.0;
+        topPanel.position.y = height - (panelDepth / 2.0);
+        topPanel.position.z = 0.0;
+
+        group.children.push( topPanel );
+		topPanel.parent = group;
+
+        const bottomPanel = new THREE.Mesh( new THREE.BoxGeometry(width, panelDepth, depth), new THREE.MeshStandardMaterial( { map: panelTexture} ) );
+        bottomPanel.name = name + "_BottomPanel";
+        bottomPanel.position.x = 0.0;
+        bottomPanel.position.y = panelDepth / 2.0;
+        bottomPanel.position.z = 0.0;
+
+        group.children.push( bottomPanel );
+		bottomPanel.parent = group;
+
+        // Add Left & Right
+        const leftPanel = new THREE.Mesh( new THREE.BoxGeometry(panelDepth, height, depth), new THREE.MeshStandardMaterial( { map: panelTexture} ) );
+        leftPanel.name = name + "_LeftPanel";
+        leftPanel.position.x = -(width - panelDepth) / 2.0;
+        leftPanel.position.y = height / 2.0;
+        leftPanel.position.z = 0.0;
+
+        group.children.push( leftPanel );
+		leftPanel.parent = group;
+
+        const rightPanel = new THREE.Mesh( new THREE.BoxGeometry(panelDepth, height, depth), new THREE.MeshStandardMaterial( { map: panelTexture} ) );
+        rightPanel.name = name + "_RightPanel";
+        rightPanel.position.x = (width - panelDepth) / 2.0;
+        rightPanel.position.y = height / 2.0;
+        rightPanel.position.z = 0.0;
+
+        group.children.push( rightPanel );
+		rightPanel.parent = group;
+
+        // Add Back
+        const backPanel = new THREE.Mesh( new THREE.BoxGeometry(width, height, panelDepth), new THREE.MeshStandardMaterial( { map: panelTexture} ) );
+        backPanel.name = name + "_BackPanel";
+        backPanel.position.x = 0.0;
+        backPanel.position.y = height / 2.0;
+        backPanel.position.z = -(depth - panelDepth) / 2.0;
+
+        group.children.push( backPanel );
+		backPanel.parent = group;
+
+        // Add Layers
+        const height_inside = height - (panelDepth * 2);
+        const width_inside = width - (panelDepth * 2);
+        const one_layer_width = width_inside / noOfLayers;
+        let cur_x = -(width_inside / 2.0) + one_layer_width;
+        for(let i=1; i<noOfLayers; i++) {
+            const layer = new THREE.Mesh( new THREE.BoxGeometry(panelDepth, height_inside, depth), new THREE.MeshStandardMaterial( { map: panelTexture} ));
+            layer.name = name + "_layer" + i;
+            layer.position.x = cur_x;
+            layer.position.y = panelDepth + height_inside / 2.0;
+            layer.position.z = 0.0;
+
+            group.children.push( layer );
+            layer.parent = group;
+
+            cur_x += one_layer_width;
+        }
+
+        // Add Doors or Drawers
+        if(door) {
+            let doorLTexture = textureHelper.get('GlassDoorLeft', 1, 1);
+            let doorRTexture = textureHelper.get('GlassDoorRight', 1, 1);
+            let drawerTexture = textureHelper.get('DrawerDoorFront', 1, 1);
+            cur_x = -(width_inside / 2.0) + (one_layer_width / 2.0);
+            for(let i=1; i<=noOfLayers; i++) {
+                let doorTexture = doorRTexture;
+                if(i == noOfLayers) {
+                    doorTexture = doorLTexture;
+                }
+                if(i > 1 && i < noOfLayers) {
+                    doorTexture = drawerTexture;
+                }
+                let material = new THREE.MeshStandardMaterial( { map: doorTexture} );
+                if(i == 1 || i == noOfLayers) {
+                    material.transparent = true;
+                    material.opacity = 0.8;
+                }
+                const door = new THREE.Mesh( new THREE.BoxGeometry(one_layer_width, height_inside, panelDepth), material);
+                door.name = name + "_door" + i;
+                door.position.x = cur_x;
+                door.position.y = panelDepth + height_inside / 2.0;
+                door.position.z = depth / 2.0;
+
+                group.children.push( door );
+                door.parent = group;
+
+                cur_x += one_layer_width;
+            }
+        }
+
+        editor.objectChanged(group);
+    }
+
     addWall_Internal(editor, walltype, whichside) {
         let object = editor.selected;
         let materials = object.material;
@@ -993,12 +1229,12 @@ export class RoomInterior {
 
                         <h2>Sofa size </h2>
                         <p>Width : <input type="text" id="width" name="width" value="1.4">
-                           Height : <input type="text" id="height" name="height" value="0.8">
+                           Height : <input type="text" id="height" name="height" value="0.4">
                            Depth : <input type="text" id="depth" name="depth" value="0.72"></p>
                         <div class="clearfix"></div>
-                        <h2>Frame Type </h2>
-                        <p><input type="radio" id="leather" name="sofatype" value="leather" checked>Leather
-                           <input type="radio" id="metal" name="sofatype" value="metal">metal</p>
+                        <h2>Sofa Type </h2>
+                        <p><input type="radio" id="leather" name="sofatype" value="Leather" checked>Leather
+                           <input type="radio" id="fabric" name="sofatype" value="Fabric">Fabric</p>
                 </label>
                 </p>
                 <div>
@@ -1016,6 +1252,9 @@ export class RoomInterior {
 
         const sofaTypeDialog = document.getElementById("sofaTypeDialog");
         const inputNameBox = document.getElementById("sofaName");
+        const widthBox = document.getElementById("width");
+        const heightBox = document.getElementById("height");
+        const depthBox = document.getElementById("depth");
 
         const confirmBtn = sofaTypeDialog.querySelector("#confirmBtn");
 
@@ -1044,7 +1283,7 @@ export class RoomInterior {
             const width = parseFloat(widthBox.value);
             const height = parseFloat(heightBox.value);
             const depth = parseFloat(depthBox.value);
-            const doorsofatypetype = document.querySelector('input[name=sofatype]:checked').value;
+            const sofatype = document.querySelector('input[name=sofatype]:checked').value;
 
             document.body.removeChild(dialog)
             
@@ -1584,6 +1823,165 @@ export class RoomInterior {
         });
 
         washingMachineTypeDialog.showModal();
+    }
+
+    addCoffeeTable(editor, modify=false) {
+        const _html = `
+            <dialog id="coffeeTableTypeDialog">
+            <form>
+                <p>
+                <label>
+                    <h1>Add/Change a Coffee Table</h1>
+                        <p>Name : <input type="text" id="coffeeTableName" name="coffeeTableName" value="CoffeeTable_1"> </p>
+
+                        <h2>Coffee Table size </h2>
+                        <p>Width : <input type="text" id="width" name="width" value="0.686">
+                           Height : <input type="text" id="height" name="height" value="0.292">
+                           Depth : <input type="text" id="depth" name="depth" value="0.264"></p>
+                        <div class="clearfix"></div>
+                        <h2>Coffee Table Option</h2>
+                        <p><input type="radio" id="wood" name="coffeeTabletype" value="Wood" checked>Wood
+                           <input type="radio" id="glass" name="coffeeTabletype" value="Glass">Glass
+                        </p>
+                </label>
+                </p>
+                <div>
+                <p>
+                <button value="cancel" formmethod="dialog">Cancel</button>
+                <button id="confirmBtn" value="default">Apply</button>
+                </p>
+                </div>
+            </form>
+    `
+
+        const dom = new DOMParser().parseFromString(_html, 'text/html');
+        const dialog = dom.querySelector("dialog");
+        document.body.appendChild(dialog)
+
+        const coffeeTableTypeDialog = document.getElementById("coffeeTableTypeDialog");
+        const inputNameBox = document.getElementById("coffeeTableName");
+        const widthBox = document.getElementById("width");
+        const heightBox = document.getElementById("height");
+        const depthBox = document.getElementById("depth");
+
+        const confirmBtn = coffeeTableTypeDialog.querySelector("#confirmBtn");
+
+        // "Cancel" button closes the dialog without submitting because of [formmethod="dialog"], triggering a close event.
+        coffeeTableTypeDialog.addEventListener("close", (e) => {
+            document.body.removeChild(dialog)
+        });
+
+        // Prevent the "confirm" button from the default behavior of submitting the form, and close the dialog with the `close()` method, which triggers the "close" event.
+        confirmBtn.addEventListener("click", (event) => {
+            event.preventDefault(); // We don't want to submit this fake form
+            
+            // coffeeTableTypeDialog.close(); // Have to send the select box value here.
+            var parent = editor.selected;
+            var oldPos = null;
+            var oldRot = null;
+            if(modify) {
+                parent = editor.selected.parent;
+                oldPos = editor.selected.position;
+                oldRot = editor.selected.rotation;
+
+                editor.execute( new RemoveObjectCommand( editor, editor.selected ) );
+            }
+
+            var name = inputNameBox.value;
+            const width = parseFloat(widthBox.value);
+            const height = parseFloat(heightBox.value);
+            const depth = parseFloat(depthBox.value);
+           const coffeeTabletype = document.querySelector('input[name=coffeeTabletype]:checked').value;
+
+            document.body.removeChild(dialog)
+            
+            this.addCoffeeTable_Internal(editor, parent, name, width, height, depth, coffeeTabletype, oldPos, oldRot);
+        });
+
+        coffeeTableTypeDialog.showModal();
+    }
+
+    addTVTable(editor, modify=false) {
+        const _html = `
+            <dialog id="tvTableTypeDialog">
+            <form>
+                <p>
+                <label>
+                    <h1>Add/Change a TV Table</h1>
+                        <p>Name : <input type="text" id="tvTableName" name="tvTableName" value="TVTable_1"> </p>
+
+                        <h2>TV Table size </h2>
+                        <p>Width : <input type="text" id="width" name="width" value="2.5">
+                           Height : <input type="text" id="height" name="height" value="0.5">
+                           Depth : <input type="text" id="depth" name="depth" value="0.5"></p>
+                        <div class="clearfix"></div>
+                        <h2>TV Table Option</h2>
+                        <p><input type="radio" id="wood" name="tvTabletype" value="Wood" checked>Wood
+                           <input type="radio" id="glass" name="tvTabletype" value="Glass">Glass
+                        </p>
+                        <h2>No of Layers</h2>
+                        <p>Name : <input type="text" id="layers" name="layers" value="4"></p>
+                        <h2>Drawer Type</h2>
+                        <p>Name : <input type="checkbox" id="door" name="door" checked><label for="door">Door</label></p>
+                </label>
+                </p>
+                <div>
+                <p>
+                <button value="cancel" formmethod="dialog">Cancel</button>
+                <button id="confirmBtn" value="default">Apply</button>
+                </p>
+                </div>
+            </form>
+    `
+
+        const dom = new DOMParser().parseFromString(_html, 'text/html');
+        const dialog = dom.querySelector("dialog");
+        document.body.appendChild(dialog)
+
+        const tvTableTypeDialog = document.getElementById("tvTableTypeDialog");
+        const inputNameBox = document.getElementById("tvTableName");
+        const widthBox = document.getElementById("width");
+        const heightBox = document.getElementById("height");
+        const depthBox = document.getElementById("depth");
+        const layersBox = document.getElementById("layers");
+
+        const confirmBtn = tvTableTypeDialog.querySelector("#confirmBtn");
+
+        // "Cancel" button closes the dialog without submitting because of [formmethod="dialog"], triggering a close event.
+        tvTableTypeDialog.addEventListener("close", (e) => {
+            document.body.removeChild(dialog)
+        });
+
+        // Prevent the "confirm" button from the default behavior of submitting the form, and close the dialog with the `close()` method, which triggers the "close" event.
+        confirmBtn.addEventListener("click", (event) => {
+            event.preventDefault(); // We don't want to submit this fake form
+            
+            // tvTableTypeDialog.close(); // Have to send the select box value here.
+            var parent = editor.selected;
+            var oldPos = null;
+            var oldRot = null;
+            if(modify) {
+                parent = editor.selected.parent;
+                oldPos = editor.selected.position;
+                oldRot = editor.selected.rotation;
+
+                editor.execute( new RemoveObjectCommand( editor, editor.selected ) );
+            }
+
+            var name = inputNameBox.value;
+            const width = parseFloat(widthBox.value);
+            const height = parseFloat(heightBox.value);
+            const depth = parseFloat(depthBox.value);
+            const tvTabletype = document.querySelector('input[name=tvTabletype]:checked').value;
+            const noOfLayers = parseInt(layersBox.value);
+            const door = document.getElementById("door").checked;
+
+            document.body.removeChild(dialog)
+            
+            this.addTVTable_Internal(editor, parent, name, width, height, depth, tvTabletype, noOfLayers, door, oldPos, oldRot);
+        });
+
+        tvTableTypeDialog.showModal();
     }
 }
             

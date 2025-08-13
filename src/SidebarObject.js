@@ -104,8 +104,8 @@ export class SidebarObject {
         modifyButton.setMarginRight( '10px' );
         modifyButton.onClick( () => {
             const name = this.editor.selected.name.toLowerCase();
-            if(name.includes('tv')) {
-                roomInterior.addTV(editor, true);
+            if(name.includes('tvtable')) {
+                roomInterior.addTVTable(editor, true);
             } else if(name.includes('wall')) {
                 roomInterior.addWall(editor);
             } else if(name.includes('bed')) {
@@ -118,6 +118,16 @@ export class SidebarObject {
                 roomInterior.addBookshelf(editor, true);
             } else if(name.includes('diningtable')) {
                 roomInterior.addDiningTable(editor, true);
+            } else if(name.includes('wardrobe')) {
+                roomInterior.addWardrobe(editor, true);
+            } else if(name.includes('sofa')) {
+                roomInterior.addSofa(editor, true);
+            } else if(name.includes('washingmachine')) {
+                roomInterior.addWashingMachine(editor, true);
+            } else if(name.includes('coffeetable')) {
+                roomInterior.addCoffeeTable(editor, true);
+            } else if(name.includes('tv')) {
+                roomInterior.addTV(editor, true);
             } else {
                 alert('No Modification applicable');
             }
